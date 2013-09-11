@@ -39,8 +39,10 @@
         <p class="lead">Please place your order and bring your money to the front desk by 11:30am</p>
       </div>
       
+      
+{% if todaysOrder.isPicked %}
       <div class="header">
-        <h1 class="text-muted">Today's Menu: Famous <small>(Sep 8th, 2013)</small></h1>
+        <h1 class="text-muted">Today's Menu: {{ todaysOrder.selectPlace.id() }} <small>(Sep 8th, 2013)</small></h1>
       </div>
       <a id="menu"></a>
       
@@ -61,25 +63,23 @@
         <div class = "row">
         <div class="col-lg-8 ">
         
-        
-        
-          <ul class="list-group">
-            {% for item in items %}
-            <li class="list-group-item">
-              <input type="checkbox"> {{item.desc}}
+
+              <ul class="list-group">
+                {% for item in items %}
+                <li class="list-group-item">
+                  <input type="checkbox"> {{item.desc}}
+                  
+                  {% if item.hasOption %}
+                      <label><input type="orderText" class="form-control" placeholder = "{{ item.option|e }}"></label>
+                      <span class="badge pull-right">{{ '$%.2f' % item.price }}</span>
+                  {% else %}
+                      <span class="badge">{{ '$%.2f' % item.price }}</span>
+                  {% endif %}
+                  
+                </li>
+                {% endfor %}
+              </ul> <!--close today's menu-->
               
-              {% if item.hasOption %}
-                  <label><input type="orderText" class="form-control" placeholder = "{{ item.option|e }}"></label>
-                  <span class="badge pull-right">{{ '$%.2f' % item.price }}</span>
-              {% else %}
-                  <span class="badge">{{ '$%.2f' % item.price }}</span>
-              {% endif %}
-              
-            </li>
-            {% endfor %}
-            
-          </ul>
-          
          <div class="row"><div class="col-lg-6"> 
           <button type="submit" class="btn btn-lg btn-success ">Feed me!</button>
          </div></div>
@@ -89,6 +89,16 @@
         </div><!-- /end row -->
       
       </form><!-- end form -->
+              
+{% else %}
+<div class= "alert alert-danger">
+    Today's restaurant has not been set yet!
+</div>
+{% endif %}
+        
+
+          
+
 
       <div class="header">
         

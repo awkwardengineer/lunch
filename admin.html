@@ -33,17 +33,28 @@
         </ul>
         <h3 class="text-muted">Foliage Lunch System: Admin</h3>
       </div>
-     
+      
+      {% if todaysOrder.isPicked %}
+      <div class= "alert alert-success">
+          Today's restaurant is currently set as {{ todaysOrder.selectPlace.id() }}
+      </div>
+      {% else %}
+      <div class= "alert alert-danger">
+          Today's restaurant has not been set yet!
+      </div>
+      {% endif %}
+      
       <div class="header">
-        <h1 class="text-muted">Select Today's Menu <small>(Sep 8th, 2013)</small></h1>
+        <h3 class="text-muted">Select Today's Restaurant <small>({{date}})</small></h3>
       </div>
       
-      <form>
+      <form action="" method="post" >
         <div class="row"><div class="col-lg-12"> 
           
-          <select class="form-control">
-              <option>Presti</option>
-              <option>Famous</option>
+          <select name="restaurant" class="form-control">
+            {% for restaurant in restaurants %}
+              <option>{{restaurant.name}}</option>
+            {% endfor %}  
           </select>
           
         </div></div>  
