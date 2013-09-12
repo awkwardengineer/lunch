@@ -25,7 +25,6 @@ class OrderOfDay(ndb.Model):
     date = ndb.DateProperty()
     
 class Restaurant(ndb.Model):
-    menu = ndb.StructuredProperty(MenuItem, repeated=True)
     name = ndb.StringProperty()
 
 class CreateData(webapp2.RequestHandler):
@@ -39,30 +38,39 @@ class CreateData(webapp2.RequestHandler):
         
 
         presti_key=ndb.Key(Restaurant, 'Presti')
-    
-        burger = MenuItem(price= 4.00, hasOption = True, option = 'Enter rare, medium, or well', desc='Burger')
-        fries = MenuItem(price= 2.27, hasOption = False, desc='Fries')
-        shake = MenuItem(price= 4.00, hasOption = False, desc='Shake')
-        drink = MenuItem(price= 1.00, hasOption = True, desc='Drink', option = 'Coke, Pepsi, or Sprite' )
-        salad = MenuItem(price= 6.00, hasOption = False, desc='Side Salad')
-        
-        presti = Restaurant(name = "Presti", menu = [burger,fries,shake,drink,salad], key=presti_key)
+        presti = Restaurant(name = "Presti",  key=presti_key)
         presti.put()
+    
+        burger = MenuItem(parent = presti_key, price= 4.00, hasOption = True, option = 'Enter rare, medium, or well', desc='Burger')
+        fries = MenuItem(parent = presti_key, price= 2.27, hasOption = False, desc='Fries')
+        shake = MenuItem(parent = presti_key, price= 4.00, hasOption = False, desc='Shake')
+        drink = MenuItem(parent = presti_key, price= 1.00, hasOption = True, desc='Drink', option = 'Coke, Pepsi, or Sprite' )
+        salad = MenuItem(parent = presti_key, price= 6.00, hasOption = False, desc='Side Salad')
+        
+        burger.put()
+        fries.put()
+        shake.put()
+        drink.put()
+        salad.put()
+        
         
         famous_key=ndb.Key(Restaurant, 'Famous')
-        
-        pizza = MenuItem(parent = ndb.Key('Restaurants','Presti'), price= 8.00, hasOption = True, option = 'Enter toppings', desc='Pizza')
-        wings = MenuItem(parent = ndb.Key('Restaurants','Presti'), price= 7.50, hasOption = True, desc='Wings', option = 'Enter Mild, Medium, or Nuclear')
-        nuggets = MenuItem(parent = ndb.Key('Restaurants','Presti'), price= 6.00, hasOption = False, desc='Nuggets')
-        drink = MenuItem(parent = ndb.Key('Restaurants','Presti'), price= 1.00, hasOption = True, desc='Drink', option = 'Coke, Pepsi, or Sprite' )
-        salad = MenuItem(parent = ndb.Key('Restaurants','Presti'), price= 6.00, hasOption = False, desc='Side Salad')
-
-        famous = Restaurant(name = "Famous", menu = [pizza,wings,nuggets,drink,salad], key=famous_key)
+        famous = Restaurant(name = "Famous", key=famous_key)
         famous.put()
         
+        pizza = MenuItem(parent = famous_key, price= 8.00, hasOption = True, option = 'Enter toppings', desc='Pizza')
+        wings = MenuItem(parent = famous_key, price= 7.50, hasOption = True, desc='Wings', option = 'Enter Mild, Medium, or Nuclear')
+        nuggets = MenuItem(parent = famous_key, price= 6.00, hasOption = False, desc='Nuggets')
+        drink = MenuItem(parent = famous_key, price= 1.00, hasOption = True, desc='Drink', option = 'Coke, Pepsi, or Sprite' )
+        salad = MenuItem(parent = famous_key, price= 6.00, hasOption = False, desc='Side Salad')
+
+        pizza.put()
+        wings.put()
+        nuggets.put()
+        drink.put()
+        salad.put()
+        
         self.response.out.write("Did it, bro")
-    
-    
  
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -71,19 +79,24 @@ class MainPage(webapp2.RequestHandler):
         todaysOrder = orderDateKey.get()
         
         
-        if todaysOrder is None:
+        if todaysOrder.isPicked is None:
             items = None
-        elif not todaysOrder:
+        elif not todaysOrder.isPicked:
             items = None
         else:
             restaurant = todaysOrder.selectPlace.get()
-            items = restaurant.menu
+            items = MenuItem.query(ancestor=restaurant.key)
         
         template_values = {"todaysOrder": todaysOrder,
                            "items": items}
         
         template = JINJA_ENVIRONMENT.get_template('index.html')
         self.response.write(template.render(template_values))
+        
+    def post(self):
+    
+        
+        self.redirect('/index.html')
         
 class AdminPage(webapp2.RequestHandler):
     def get(self):
