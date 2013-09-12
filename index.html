@@ -66,10 +66,10 @@
               <ul class="list-group">
                 {% for item in items %}
                 <li class="list-group-item">
-                  <input name="{{item.key.id()}}" type="checkbox" value = 1> {{item.desc}}
+                  <input name="{{item.key.urlsafe()}}" type="checkbox" value = 1> {{item.desc}}
                   
                   {% if item.hasOption %}
-                      <label><input name="option{{item.key.id()}}"  type="orderText" class="form-control" placeholder = "{{ item.option|e }}"></label>
+                      <label><input name="option{{item.key.urlsafe()}}"  type="orderText" class="form-control" placeholder = "{{ item.option|e }}"></label>
                       <span class="badge pull-right">{{ '$%.2f' % item.price }}</span>
                   {% else %}
                       <span class="badge">{{ '$%.2f' % item.price }}</span>
@@ -111,24 +111,20 @@
               <tr>
                 <th>Name</th>
                 <th>Ordered Item</th>
+                <th>Options</th>
                 <th>Price</th>
               </tr>
               </thead>
+              
+              {% for order in orders %}
               <tr>
-                <td>Bob</td>
-                <td>Sammich</td>
-                <td>$2.50</td>
+                <td>{{order.customer}}</td>
+                <td>{{order.item.get().desc}}</td>
+                <td>{% if (order.option == None) %} {% else %}{{order.option}}{% endif %}</td>
+                <td>{{'$%.2f' % order.item.get().price}}</td>
               </tr>
-              <tr>
-                <td>Bob</td>
-                <td>Sammich</td>
-                <td>$2.50</td>              
-              </tr>
-              <tr>
-                <td>Bob</td>
-                <td>Sammich</td>
-                <td>$2.50</td>              
-              </tr>
+              {% endfor %}
+              
             </table>
           
           </div>

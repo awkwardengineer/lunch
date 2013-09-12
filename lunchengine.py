@@ -4,6 +4,7 @@ import webapp2
 import jinja2
 import os
 import datetime
+import logging
 
 from google.appengine.ext import ndb
 
@@ -17,11 +18,17 @@ class MenuItem(ndb.Model):
     price = ndb.FloatProperty()
     hasOption = ndb.BooleanProperty()
     option = ndb.StringProperty()
+    #when created, MenuItem's designate a parent restaurant as part of their "key"
+
+class Order(ndb.Model):
+    item = ndb.KeyProperty()
+    customer = ndb.StringProperty()
+    option = ndb.StringProperty()
+    #when created, Order's designate a parent OrderOfDay as part of their "key"
     
 class OrderOfDay(ndb.Model):
     isPicked = ndb.BooleanProperty()
     selectPlace =ndb.KeyProperty()
-    orders = ndb.StructuredProperty(MenuItem, repeated=True)
     date = ndb.DateProperty()
     
 class Restaurant(ndb.Model):
@@ -81,23 +88,65 @@ class MainPage(webapp2.RequestHandler):
         
         if todaysOrder.isPicked is None:
             items = None
+            orders = None
         elif not todaysOrder.isPicked:
             items = None
+            orders = None
         else:
             restaurant = todaysOrder.selectPlace.get()
             items = MenuItem.query(ancestor=restaurant.key)
+            orders = Order.query(ancestor = orderDateKey)
         
         template_values = {"todaysOrder": todaysOrder,
-                           "items": items}
+                           "items": items,
+                           "orders": orders}
         
         template = JINJA_ENVIRONMENT.get_template('index.html')
         self.response.write(template.render(template_values))
+
+
+
         
     def post(self):
-    
+        now = datetime.date.today()
+        orderDateKey = ndb.Key(OrderOfDay, now.isoformat())
+        todaysOrder = orderDateKey.get()
         
+        
+        if todaysOrder.isPicked is None:
+            choices = None
+        elif not todaysOrder.isPicked:
+            choices = None
+        else:
+            restaurant = todaysOrder.selectPlace.get()
+            choices = MenuItem.query(ancestor=restaurant.key)
+            
+            responses = self.request.POST
+            
+            customer=''
+            option = None
+            
+            for response in responses.iterkeys():
+                if (response == 'customer'):
+                    customer = responses['customer']
+                elif not ("option" in response):
+                    itemKey = ndb.Key(urlsafe=response)
+                    
+                                        
+                    myItem = itemKey.get()
+                    
+                    if myItem.hasOption:
+                        option = responses['option'+ response]
+                        
+                    order = Order(parent=orderDateKey, item=itemKey,option = option, customer=customer)
+                    order.put()
+                
         self.redirect('/index.html')
-        
+    
+
+
+
+    
 class AdminPage(webapp2.RequestHandler):
     def get(self):
     
