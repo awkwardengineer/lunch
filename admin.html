@@ -27,8 +27,7 @@
     <div class="container">
       <div class="header">
         <ul class="nav nav-pills pull-right">
-          <li><a href="index.html#menu">Menu</a></li>
-          <li><a href="index.html#orders">Orders</a></li>
+          <li><a href="index.html">Menu</a></li>
           <li class="active"><a href="admin.html">Admin</a></li>
         </ul>
         <h3 class="text-muted">Foliage Lunch System: Admin</h3>
@@ -36,7 +35,7 @@
       
       {% if todaysOrder.isPicked %}
       <div class= "alert alert-success">
-          Today's restaurant is currently set as {{ todaysOrder.selectPlace.id() }}
+          <h1><small>Today's restaurant is currently set as</small> {{ todaysOrder.selectPlace.id() }}</h1>
       </div>
       {% else %}
       <div class= "alert alert-danger">
@@ -52,15 +51,24 @@
         <div class="row"><div class="col-lg-12"> 
           
           <select name="restaurant" class="form-control">
+              <option disabled selected>Choose a restaurant</option>
             {% for restaurant in restaurants %}
+            
               <option>{{restaurant.name}}</option>
-            {% endfor %}  
+            {% endfor %}
+              <option>Clear restaurant (and reset orders)</option>
           </select>
           
         </div></div>  
         
         <div class="row"><div class="col-lg-12"> 
-          <button type="submit" class="btn btn-lg btn-success ">Select Restaurant</button>
+            {% if todaysOrder.isPicked %}
+              <button type="submit" class="btn btn-lg btn-warning ">(Re)Select Restaurant</button>
+            {% else %}
+              <button type="submit" class="btn btn-lg btn-success ">Select Restaurant</button>
+            {% endif %}
+          
+          
         </div></div>
         
       </form>

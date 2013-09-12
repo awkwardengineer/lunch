@@ -112,11 +112,15 @@ class AdminPage(webapp2.RequestHandler):
         restaurant = self.request.POST['restaurant']
         
         orderDateKey = ndb.Key(OrderOfDay, now.isoformat())
-        
         todaysOrder= orderDateKey.get()
-        todaysOrder.isPicked = True
-        todaysOrder.selectPlace = ndb.Key(Restaurant, restaurant)
-        todaysOrder.put()
+        
+        if restaurant == "Clear restaurant (and reset orders)":
+            todaysOrder.isPicked=False
+            todaysOrder.put()
+        else:
+            todaysOrder.isPicked = True
+            todaysOrder.selectPlace = ndb.Key(Restaurant, restaurant)
+            todaysOrder.put()
         
         self.redirect('/admin.html')
         
