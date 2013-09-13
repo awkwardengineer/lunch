@@ -4,7 +4,7 @@ import webapp2
 import jinja2
 import os
 import datetime
-import logging
+import json
 
 from google.appengine.ext import ndb
 
@@ -95,11 +95,12 @@ class MainPage(webapp2.RequestHandler):
         else:
             restaurant = todaysOrder.selectPlace.get()
             items = MenuItem.query(ancestor=restaurant.key)
-            orders = Order.query(ancestor = orderDateKey)
+            orders = Order.query(ancestor = orderDateKey).order(Order.customer)
         
         template_values = {"todaysOrder": todaysOrder,
                            "items": items,
-                           "orders": orders}
+                           "orders": orders,
+                           "date": now.strftime('%b %d, %Y') }
         
         template = JINJA_ENVIRONMENT.get_template('index.html')
         self.response.write(template.render(template_values))
@@ -115,6 +116,7 @@ class MainPage(webapp2.RequestHandler):
         
         if todaysOrder.isPicked is None:
             choices = None
+            
         elif not todaysOrder.isPicked:
             choices = None
         else:
@@ -157,13 +159,21 @@ class AdminPage(webapp2.RequestHandler):
           makeToday = OrderOfDay(isPicked = False, date = now, key = orderDateKey)
           makeToday.put()
           
-        checkToday = orderDateKey.get()
+        todaysOrder = orderDateKey.get()
+        if todaysOrder.isPicked is None:
+            orders = None
+        elif not todaysOrder.isPicked:
+            orders = None
+        else:
+            orders = Order.query(ancestor = orderDateKey).order(Order.customer)
+
         
         restaurants = Restaurant.query()
                 
       
         template_values = {"restaurants":restaurants,
-                           "todaysOrder":checkToday,
+                           "todaysOrder":todaysOrder,
+                           "orders":orders,
                            "date": now.strftime('%b %d, %Y') }
         
         template = JINJA_ENVIRONMENT.get_template('admin.html')
@@ -176,9 +186,18 @@ class AdminPage(webapp2.RequestHandler):
         orderDateKey = ndb.Key(OrderOfDay, now.isoformat())
         todaysOrder= orderDateKey.get()
         
-        if restaurant == "Clear restaurant (and reset orders)":
+        if restaurant == "Choose a restaurant":
+            self.redirect('/admin.html')
+        elif restaurant == "Clear restaurant (and reset orders)":
             todaysOrder.isPicked=False
             todaysOrder.put()
+            
+            orders = Order.query(ancestor = orderDateKey)
+            keys=[]
+            for order in orders:
+              keys.append(order.key)
+            ndb.delete_multi(keys)
+            
         else:
             todaysOrder.isPicked = True
             todaysOrder.selectPlace = ndb.Key(Restaurant, restaurant)
@@ -186,10 +205,58 @@ class AdminPage(webapp2.RequestHandler):
         
         self.redirect('/admin.html')
         
-  
+class ImportData(webapp2.RequestHandler):
+    def post(self):
+        
+        now = datetime.date.today()
+        orderDateKey = ndb.Key(OrderOfDay, now.isoformat())
+        todaysOrder= orderDateKey.get()
+        todaysOrder.isPicked=False
+        todaysOrder.put()
+        
+        orders = Order.query(ancestor = orderDateKey)
+        keys=[]
+        for order in orders:
+            keys.append(order.key)
+            ndb.delete_multi(keys)
+    
+    
+        items = MenuItem.query()
+        keys=[]
+        for item in items:
+            keys.append(item.key)
+            ndb.delete_multi(keys)
+    
+        data=self.request.POST['jsonData']
+        udata = json.loads(urllib.unquote(data).decode('utf8'))
+        
+        point = 0
+        
+        for i in udata:
+        
+            restaurantKey = ndb.Key(Restaurant, udata[point]['restaurant'] )
+            
+            restaurant = Restaurant(name=udata[point]['restaurant'], key=restaurantKey)
+            restaurant.put()
+            
+            hasOption=True
+            
+            if udata[point]['specialrequest']=="":
+                udata[point]['specialrequest']=None
+                hasOption = False
+            
+            item = MenuItem(parent = restaurantKey,desc = udata[point]['item'], price = float(udata[point]['price']), hasOption = hasOption, option = udata[point]['specialrequest'])
+            
+            item.put()
+            
+            point = point + 1
+            
+            
+        self.redirect('/admin.html')
 
 app = webapp2.WSGIApplication([('/',MainPage),
                                ('/index.html',MainPage),
                                ('/admin.html',AdminPage),
-                               ('/data.html', CreateData)],
+                               ('/data.html', CreateData),
+                               ('/importdata.html', ImportData)],
                               debug=True)

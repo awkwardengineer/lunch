@@ -30,12 +30,13 @@
           <li><a href="index.html">Menu</a></li>
           <li class="active"><a href="admin.html">Admin</a></li>
         </ul>
-        <h3 class="text-muted">Foliage Lunch System: Admin</h3>
+        <h3 class="text-muted">Foliage Lunch System: Admin&nbsp<small>({{date}})</small></h3></h3>
       </div>
+  
       
       {% if todaysOrder.isPicked %}
       <div class= "alert alert-success">
-          <h1><small>Today's restaurant is currently set as</small> {{ todaysOrder.selectPlace.id() }}</h1>
+          <h1><small>Today's restaurant is currently set as </small> {{ todaysOrder.selectPlace.id() }}</h1>
       </div>
       {% else %}
       <div class= "alert alert-danger">
@@ -43,15 +44,11 @@
       </div>
       {% endif %}
       
-      <div class="header">
-        <h3 class="text-muted">Select Today's Restaurant <small>({{date}})</small></h3>
-      </div>
-      
       <form action="" method="post" >
         <div class="row"><div class="col-lg-12"> 
           
           <select name="restaurant" class="form-control">
-              <option disabled selected>Choose a restaurant</option>
+              <option selected>Choose a restaurant</option>
             {% for restaurant in restaurants %}
             
               <option>{{restaurant.name}}</option>
@@ -79,6 +76,7 @@
         
       </div>
       
+      
       <div class="row"><div class="col-lg-8"> 
           <a id="orders"></a>
           
@@ -87,30 +85,60 @@
               <tr>
                 <th>Name</th>
                 <th>Ordered Item</th>
+                <th>Options</th>
                 <th>Price</th>
               </tr>
               </thead>
+              {% if (orders == None) %}
+               <td>No orders placed yet</td>
+               <td></td>
+               <td></td>
+               <td></td>
+              {% else %}
+              {% for order in orders %}
               <tr>
-                <td>Bob</td>
-                <td>Sammich</td>
-                <td>$2.50</td>
+                <td>{{order.customer}}</td>
+                <td>{{order.item.get().desc}}</td>
+                <td>{% if (order.option == None) %} {% else %}{{order.option}}{% endif %}</td>
+                <td>{{'$%.2f' % order.item.get().price}}</td>
               </tr>
-              <tr>
-                <td>Bob</td>
-                <td>Sammich</td>
-                <td>$2.50</td>              
-              </tr>
-              <tr>
-                <td>Bob</td>
-                <td>Sammich</td>
-                <td>$2.50</td>              
-              </tr>
+              {% endfor %}
+              {% endif %}
+              
             </table>
           
           </div>
         </div>
         
-      
+    <div class="header">
+      <h1 class="text-muted">Menu Update Instructions</small></h1>
+    </div>
+    
+    <div>
+    <p>The lunch menu can be edited through a google spreadsheet located <a href="https://docs.google.com/spreadsheet/pub?key=0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc&output=html">here.</a> The spreadsheet is publicly viewable, but write access is limited. Contact Sam Feller for access.</p>
+
+    <div class= "alert alert-danger">
+        Updating the database from the spreadsheet complete overwrites existing data. Any information not included in the spreadsheet will be gone forever! Today's orders will also be cleared.
+    </div>
+    
+    <ol>
+        <li>Click "Step 1" to load the data from the spreadsheet</li>
+        <li>Click "Step 2" to submit the data to the database</li>
+    </ol>
+    
+    <p>The spreadsheet is embedded below (read only) for reference</p>
+    </div>
+    
+    <div class="header"></div>
+        
+    <iframe width='700' height='300' frameborder='0' src='https://docs.google.com/spreadsheet/pub?key=0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc&single=true&gid=0&output=html&widget=true'></iframe>
+
+    <form action="/importdata.html" method="post">
+      <button id="step1" type="button" class="btn btn-lg btn-success" >Step 1: Load Spreadsheet Data</button>
+      <button type="submit" id="step2" type="button" class="btn btn-lg btn-success" disabled="disabled">Step 2: Commit Spreadsheet to Database</button>
+      <input name="jsonData" id="jsonData" type="hidden" value="test">
+    </form>
+
 
       <div class="footer">
         <p>Foliage 2013</p>
@@ -124,4 +152,35 @@
     <!-- Placed at the end of the document so the pages load faster -->
   
 
-</body></html>
+</body>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="scripts/tabletop.js"></script>
+    
+<script>
+    
+  $(document).ready( function(){  
+      var jsonData;
+  
+      $('#step1').click(function(){ downloadData()});
+      
+      function downloadData() {
+        Tabletop.init( { key: '0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc',
+                         callback: function(data, tabletop) {        
+                                      $('#step1').attr('class', "btn btn-lg btn-success");
+                                      $('#step2').attr('class', "btn btn-lg btn-success");
+                                      $('#step2').removeAttr('disabled');
+                                      
+                                      console.log(data);
+                                      
+                                      $('#jsonData').attr('value', JSON.stringify(data));
+                                      jsonData = data;
+                                      },
+                         simpleSheet: true }
+                      );
+      }
+  });
+    
+</script>
+
+</html>

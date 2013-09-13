@@ -41,7 +41,7 @@
       
 {% if todaysOrder.isPicked %}
       <div class="header">
-        <h1 class="text-muted">Today's Menu: {{ todaysOrder.selectPlace.id() }} <small>(Sep 8th, 2013)</small></h1>
+        <h1 class="text-muted">Today's Menu: {{ todaysOrder.selectPlace.id() }} <small>({{date}})</small></h1>
       </div>
       <a id="menu"></a>
       
@@ -115,7 +115,12 @@
                 <th>Price</th>
               </tr>
               </thead>
-              
+              {% if (orders == None) %}
+               <td>No orders placed yet</td>
+               <td></td>
+               <td></td>
+               <td></td>
+              {% else %}
               {% for order in orders %}
               <tr>
                 <td>{{order.customer}}</td>
@@ -124,6 +129,7 @@
                 <td>{{'$%.2f' % order.item.get().price}}</td>
               </tr>
               {% endfor %}
+              {% endif %}
               
             </table>
           

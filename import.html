@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://getbootstrap.com/examples/jumbotron-narrow/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title>Foliage Lunch System</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://getbootstrap.com/dist/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/jumbotron-narrow.css" rel="stylesheet">
+    
+
+    
+    
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../../assets/js/html5shiv.js"></script>
+      <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+<body>
+
+  <div class="container">
+    <div class="header">
+      <ul class="nav nav-pills pull-right">
+        <li class="active"><a href="">Menu</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+      <h3 class="text-muted">Foliage Lunch System</h3>
+    </div>
+
+    <div class="jumbotron">
+      <h1>Welcome to Spreadsheets!</h1>
+      <p class="lead">Check the console for data (CTRL&nbsp;+&nbsp;SHIFT&nbsp;+&nbsp;J</p>
+    </div>
+    
+    <form action="/importdata.html" method="post">
+      <button id="step1" type="button" class="btn btn-lg btn-success" >Step 1: Load Spreadsheet Data</button>
+      <button type="submit" id="step2" type="button" class="btn btn-lg btn-success" disabled="disabled">Step 2: Commit Spreadsheet to Database</button>
+    </form>
+    
+  </div>
+</body>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="scripts/tabletop.js"></script>
+    
+<script>
+    
+  $(document).ready( function(){  
+
+      $('#step1').click(function(){ downloadData()});
+      
+      function downloadData() {
+      Tabletop.init( { key: '0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc',
+                       callback: function(data, tabletop) {        
+                                    $('#step1').attr('class', "btn btn-lg btn-success");
+                                    $('#step2').attr('class', "btn btn-lg btn-success");
+                                    $('#step2').removeAttr('disabled');
+                                    
+                          
+                                    console.log(data); },
+                       simpleSheet: true }
+                    );
+    }
+     
+  });
+    
+</script>
+
+
+  
