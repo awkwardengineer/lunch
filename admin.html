@@ -33,51 +33,42 @@
         <h3 class="text-muted">Foliage Lunch System: Admin&nbsp<small>({{date}})</small></h3></h3>
       </div>
   
+     <div class="row">
+      <div class="col-lg-5 ">      
+
+{% if todaysOrder.isPicked %}
+        <div class= "alert alert-success">
+            <h1><small>Today's restaurant is currently set as </small> {{ todaysOrder.selectPlace.id() }}</h1>
+        </div>
+{% else %}
+        <div class= "alert alert-danger">
+            <h2><small>Today's restaurant has not been set yet!</h2></small>
+        </div>
+{% endif %}
       
-      {% if todaysOrder.isPicked %}
-      <div class= "alert alert-success">
-          <h1><small>Today's restaurant is currently set as </small> {{ todaysOrder.selectPlace.id() }}</h1>
-      </div>
-      {% else %}
-      <div class= "alert alert-danger">
-          Today's restaurant has not been set yet!
-      </div>
-      {% endif %}
-      
-      <form action="" method="post" >
-        <div class="row"><div class="col-lg-12"> 
+        <form action="" method="post" >
+        
           
           <select name="restaurant" class="form-control">
               <option selected>Choose a restaurant</option>
-            {% for restaurant in restaurants %}
-            
+{% for restaurant in restaurants %}
               <option>{{restaurant.name}}</option>
-            {% endfor %}
+{% endfor %}
               <option>Clear restaurant (and reset orders)</option>
-          </select>
+          </select><br>
           
-        </div></div>  
-        
-        <div class="row"><div class="col-lg-12"> 
-            {% if todaysOrder.isPicked %}
-              <button type="submit" class="btn btn-lg btn-warning ">(Re)Select Restaurant</button>
-            {% else %}
-              <button type="submit" class="btn btn-lg btn-success ">Select Restaurant</button>
-            {% endif %}
+{% if todaysOrder.isPicked %}
+            <button type="submit" class="btn btn-lg btn-warning ">(Re)Select Restaurant</button>
+{% else %}
+            <button type="submit" class="btn btn-lg btn-success ">Select Restaurant</button>
+{% endif %}
           
-          
-        </div></div>
-        
-      </form>
-      
-      
+        </form>  
+     </div><!-- end col6 -->        
+{% if todaysOrder.isPicked %}        
 
-      <div class="header">
-        
-      </div>
+      <div class="col-lg-6 col-lg-offset-1"> 
       
-      
-      <div class="row"><div class="col-lg-8"> 
           <a id="orders"></a>
           
             <table class="table table-striped">
@@ -105,44 +96,45 @@
               {% endfor %}
               {% endif %}
               
-            </table>
-          
+            </table>     
           </div>
-        </div>
-        
-    <div class="header">
-      <h1 class="text-muted">Menu Update Instructions</small></h1>
+{% endif %}
+      </div><!-- end row-->
+           
+    <div class="header" style="padding-top:15em">
+      <h1 class="text-muted">Menu Editing Instructions</small></h1>
     </div>
-    
-    <div>
-    <p>The lunch menu can be edited through a google spreadsheet located <a href="https://docs.google.com/spreadsheet/pub?key=0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc&output=html">here.</a> The spreadsheet is publicly viewable, but write access is limited. Contact Sam Feller for access.</p>
+    <div class="row">
+    <div class="col-lg-8"> 
+      <div>
+      <p>The lunch menu can be edited through a google spreadsheet located <a href="https://docs.google.com/spreadsheet/pub?key=0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc&output=html">here.</a> The spreadsheet is publicly viewable, but write access is limited. Contact Sam Feller for access.</p>
 
-    <div class= "alert alert-danger">
-        Updating the database from the spreadsheet complete overwrites existing data. Any information not included in the spreadsheet will be gone forever! Today's orders will also be cleared.
-    </div>
-    
-    <ol>
-        <li>Click "Step 1" to load the data from the spreadsheet</li>
-        <li>Click "Step 2" to submit the data to the database</li>
-    </ol>
-    
-    <p>The spreadsheet is embedded below (read only) for reference</p>
-    </div>
-    
-    <div class="header"></div>
-        
-    <iframe width='700' height='300' frameborder='0' src='https://docs.google.com/spreadsheet/pub?key=0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc&single=true&gid=0&output=html&widget=true'></iframe>
-
-    <form action="/importdata.html" method="post">
-      <button id="step1" type="button" class="btn btn-lg btn-success" >Step 1: Load Spreadsheet Data</button>
-      <button type="submit" id="step2" type="button" class="btn btn-lg btn-success" disabled="disabled">Step 2: Commit Spreadsheet to Database</button>
-      <input name="jsonData" id="jsonData" type="hidden" value="test">
-    </form>
-
-
-      <div class="footer">
-        <p>Foliage 2013</p>
+      <div class= "alert alert-danger">
+          WARNING! Updating the database from the spreadsheet completely overwrites existing data. Any information not included in the spreadsheet will be gone forever! Today's orders will also be cleared.
       </div>
+      
+      <ol>
+          <li>Click "Step 1" to load the data from the spreadsheet</li>
+          <li>Click "Step 2" to submit the data to the database</li>
+      </ol>
+      
+      <p>The spreadsheet is embedded below (read only) for reference</p>
+      </div>
+      
+      <div class="header"></div>
+          
+      <iframe width='700' height='300' frameborder='0' src='https://docs.google.com/spreadsheet/pub?key=0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc&single=true&gid=0&output=html&widget=true'></iframe>
+
+      <form action="/importdata.html" method="post">
+        <button id="step1" type="button" class="btn btn-lg btn-success" >Step 1: Load Spreadsheet Data</button>
+        <button type="submit" id="step2" type="button" class="btn btn-lg btn-success" disabled="disabled">Step 2: Commit Spreadsheet to Database</button>
+        <input name="jsonData" id="jsonData" type="hidden" value="test">
+      </form>
+    </div></div><!--endrow-->
+
+    <div class="footer">
+      <p>Foliage 2013</p>
+    </div>
 
     </div> <!-- /container -->
 

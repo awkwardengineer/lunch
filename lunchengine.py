@@ -86,16 +86,19 @@ class MainPage(webapp2.RequestHandler):
         todaysOrder = orderDateKey.get()
         
         
-        if todaysOrder.isPicked is None:
+        if todaysOrder.isPicked is None:  #if it doesn't exist
             items = None
             orders = None
-        elif not todaysOrder.isPicked:
+        elif not todaysOrder.isPicked:  #if it doesn't exist and it is false
             items = None
             orders = None
         else:
             restaurant = todaysOrder.selectPlace.get()
             items = MenuItem.query(ancestor=restaurant.key)
             orders = Order.query(ancestor = orderDateKey).order(Order.customer)
+            
+        if orders.count()==0:
+            orders = None;
         
         template_values = {"todaysOrder": todaysOrder,
                            "items": items,
@@ -166,6 +169,8 @@ class AdminPage(webapp2.RequestHandler):
             orders = None
         else:
             orders = Order.query(ancestor = orderDateKey).order(Order.customer)
+            if orders.count()==0:
+                orders = None;
 
         
         restaurants = Restaurant.query()
