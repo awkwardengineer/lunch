@@ -64,19 +64,7 @@ class CreateData(webapp2.RequestHandler):
         famous_key=ndb.Key(Restaurant, 'Famous')
         famous = Restaurant(name = "Famous", key=famous_key)
         famous.put()
-        
-        pizza = MenuItem(parent = famous_key, price= 8.00, hasOption = True, option = 'Enter toppings', desc='Pizza')
-        wings = MenuItem(parent = famous_key, price= 7.50, hasOption = True, desc='Wings', option = 'Enter Mild, Medium, or Nuclear')
-        nuggets = MenuItem(parent = famous_key, price= 6.00, hasOption = False, desc='Nuggets')
-        drink = MenuItem(parent = famous_key, price= 1.00, hasOption = True, desc='Drink', option = 'Coke, Pepsi, or Sprite' )
-        salad = MenuItem(parent = famous_key, price= 6.00, hasOption = False, desc='Side Salad')
-
-        pizza.put()
-        wings.put()
-        nuggets.put()
-        drink.put()
-        salad.put()
-        
+                
         self.response.out.write("Did it, bro")
  
 class MainPage(webapp2.RequestHandler):
@@ -85,8 +73,13 @@ class MainPage(webapp2.RequestHandler):
         orderDateKey = ndb.Key(OrderOfDay, now.isoformat())
         todaysOrder = orderDateKey.get()
         
+        if todaysOrder == None:
+            todaysOrder = OrderOfDay(isPicked = False, date = now, key = orderDateKey)
+            todaysOrder.put()
+          
+      #  todaysOrder = orderDateKey.get()  
         
-        if todaysOrder.isPicked is None:  #if it doesn't exist
+        if todaysOrder == None:  #if it doesn't exist
             items = None
             orders = None
         elif not todaysOrder.isPicked:  #if it doesn't exist and it is false
@@ -97,8 +90,8 @@ class MainPage(webapp2.RequestHandler):
             items = MenuItem.query(ancestor=restaurant.key)
             orders = Order.query(ancestor = orderDateKey).order(Order.customer)
             
-        if orders.count()==0:
-            orders = None;
+            if orders.count()==0:
+                orders = None
         
         template_values = {"todaysOrder": todaysOrder,
                            "items": items,
@@ -117,7 +110,7 @@ class MainPage(webapp2.RequestHandler):
         todaysOrder = orderDateKey.get()
         
         
-        if todaysOrder.isPicked is None:
+        if todaysOrder == None:
             choices = None
             
         elif not todaysOrder.isPicked:
@@ -156,13 +149,14 @@ class AdminPage(webapp2.RequestHandler):
     def get(self):
     
         now = datetime.date.today()
-        orderDateKey = ndb.Key(OrderOfDay, now.isoformat()) #use the datestring as the key
-        
-        if not orderDateKey.get():
-          makeToday = OrderOfDay(isPicked = False, date = now, key = orderDateKey)
-          makeToday.put()
-          
+        orderDateKey = ndb.Key(OrderOfDay, now.isoformat())
         todaysOrder = orderDateKey.get()
+        
+        if todaysOrder == None:
+            todaysOrder = OrderOfDay(isPicked = False, date = now, key = orderDateKey)
+            todaysOrder.put()
+          
+      #  todaysOrder = orderDateKey.get()
         if todaysOrder.isPicked is None:
             orders = None
         elif not todaysOrder.isPicked:
