@@ -18,6 +18,7 @@ class MenuItem(ndb.Model):
     price = ndb.FloatProperty()
     hasOption = ndb.BooleanProperty()
     option = ndb.StringProperty()
+    rowNumber = ndb.IntegerProperty()
     #when created, MenuItem's designate a parent restaurant as part of their "key"
 
 class Order(ndb.Model):
@@ -87,7 +88,7 @@ class MainPage(webapp2.RequestHandler):
             orders = None
         else:
             restaurant = todaysOrder.selectPlace.get()
-            items = MenuItem.query(ancestor=restaurant.key)
+            items = MenuItem.query(ancestor=restaurant.key).order(MenuItem.rowNumber)
             orders = Order.query(ancestor = orderDateKey).order(Order.customer)
             
             if orders.count()==0:
@@ -244,7 +245,7 @@ class ImportData(webapp2.RequestHandler):
                 udata[point]['specialrequest']=None
                 hasOption = False
             
-            item = MenuItem(parent = restaurantKey,desc = udata[point]['item'], price = float(udata[point]['price']), hasOption = hasOption, option = udata[point]['specialrequest'])
+            item = MenuItem(parent = restaurantKey,desc = udata[point]['item'], price = float(udata[point]['price']), hasOption = hasOption, option = udata[point]['specialrequest'], rowNumber = udata[point]['rowNumber'])
             
             item.put()
             
