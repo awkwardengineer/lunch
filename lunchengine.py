@@ -136,6 +136,8 @@ class MainPage(webapp2.RequestHandler):
                     
                     if myItem.hasOption:
                         option = responses['option'+ response]
+                    else:
+                        option = None
                         
                     order = Order(parent=orderDateKey, item=itemKey,option = option, customer=customer)
                     order.put()
