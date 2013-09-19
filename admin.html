@@ -26,15 +26,16 @@
 
     <div class="container">
       <div class="header">
-        <ul class="nav nav-pills pull-right">
+        <ul class="nav nav-pills pull-right no-print">
           <li><a href="index.html">Menu</a></li>
+          <li><a href="printer.html">Printer Friendly</a></li>
           <li class="active"><a href="admin.html">Admin</a></li>
         </ul>
-        <h3 class="text-muted">Sam's Lunch System: Admin&nbsp<small>({{date}})</small></h3></h3>
+        <h3 class="text-muted">Sam's Lunch System: <span class="print-only">{{ todaysOrder.selectPlace.id() }}</span><span class="no-print">Admin</span>&nbsp<small>({{date}})</small></h3></h3>
       </div>
   
      <div class="row">
-      <div class="col-lg-5 ">      
+      <div class="col-lg-5 no-print ">      
 
 {% if todaysOrder.isPicked %}
         <div class= "alert alert-success">
@@ -101,10 +102,10 @@
 {% endif %}
       </div><!-- end row-->
            
-    <div class="header" style="padding-top:15em">
+    <div class="header no-print" style="padding-top:15em">
       <h1 class="text-muted">Menu Editing Instructions</small></h1>
     </div>
-    <div class="row">
+    <div class="row no-print">
     <div class="col-lg-8"> 
       <div>
       <p>The lunch menu can be edited through a google spreadsheet located <a href="https://docs.google.com/spreadsheet/ccc?key=0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc&usp=sharing">here.</a> The spreadsheet is publicly viewable, but write access is limited. Contact Sam Feller for access.</p>
@@ -134,8 +135,8 @@
       </form>
     </div></div><!--endrow-->
 
-    <div class="footer">
-      <p>© Sam 2013</p>
+    <div class="footer no-print">
+      <p>&copy; Sam 2013</p>
     </div>
 
     </div> <!-- /container -->

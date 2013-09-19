@@ -255,10 +255,39 @@ class ImportData(webapp2.RequestHandler):
             
             
         self.redirect('/admin.html')
+        
+class PrinterFriendly(webapp2.RequestHandler):
+    def get(self):
+    
+        now = datetime.date.today()
+        orderDateKey = ndb.Key(OrderOfDay, now.isoformat())
+        todaysOrder = orderDateKey.get()
+        
+        if todaysOrder == None:
+            todaysOrder = OrderOfDay(isPicked = False, date = now, key = orderDateKey)
+            todaysOrder.put()
+          
+      #  todaysOrder = orderDateKey.get()
+        if todaysOrder.isPicked is None:
+            orders = None
+        elif not todaysOrder.isPicked:
+            orders = None
+        else:
+            orders = Order.query(ancestor = orderDateKey).order(Order.customer)
+            if orders.count()==0:
+                orders = None;
+
+        template_values = {"todaysOrder":todaysOrder,
+                           "orders":orders,
+                           "date": now.strftime('%b %d, %Y') }
+        
+        template = JINJA_ENVIRONMENT.get_template('/printer.html')
+        self.response.write(template.render(template_values))
 
 app = webapp2.WSGIApplication([('/',MainPage),
                                ('/index.html',MainPage),
                                ('/admin.html',AdminPage),
                                ('/data.html', CreateData),
+                               ('/printer.html',PrinterFriendly),
                                ('/importdata.html', ImportData)],
                               debug=True)

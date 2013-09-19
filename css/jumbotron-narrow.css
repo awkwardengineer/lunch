@@ -84,4 +84,20 @@ body {
   .jumbotron {
     border-bottom: 0;
   }
+  
+  .print-only{
+    display: none !important;
+  }
+  
+}
+
+
+
+@media print
+{    
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+    
 }
