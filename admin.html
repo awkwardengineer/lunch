@@ -30,7 +30,12 @@
           <li><a href="index.html">Menu</a></li>
           <li class="active"><a href="admin.html">Admin</a></li>
         </ul>
-        <h3 class="text-muted">Sam's Lunch System: <span class="print-only">{{ todaysOrder.selectPlace.id() }}</span><span class="no-print">Admin</span>&nbsp<small>({{date}})</small></h3></h3>
+        <h3 class="text-muted">Sam's Lunch System: 
+        {% if todaysOrder.isPicked %}
+          <span class="print-only">{{ todaysOrder.selectPlace.id() }}</span>
+          <span class="no-print">Admin</span>&nbsp<small>({{date}})</small>
+        {% endif %}
+        </h3>
       </div>
   
      <div class="row">
