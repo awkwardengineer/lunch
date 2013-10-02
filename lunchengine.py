@@ -231,27 +231,25 @@ class ImportData(webapp2.RequestHandler):
     
         data=self.request.POST['jsonData']
         udata = json.loads(urllib.unquote(data).decode('utf8'))
-        
-        point = 0
-        
-        for i in udata:
-        
-            restaurantKey = ndb.Key(Restaurant, udata[point]['restaurant'] )
-            
-            restaurant = Restaurant(name=udata[point]['restaurant'], key=restaurantKey)
+
+        for key in udata:
+            restaurantKey = ndb.Key(Restaurant, udata[key]['name'])
+            restaurant = Restaurant(name = udata[key]['name'], key = restaurantKey)
             restaurant.put()
             
-            hasOption=True
-            
-            if udata[point]['specialrequest']=="":
-                udata[point]['specialrequest']=None
-                hasOption = False
-            
-            item = MenuItem(parent = restaurantKey,desc = udata[point]['item'], price = float(udata[point]['price']), hasOption = hasOption, option = udata[point]['specialrequest'], rowNumber = udata[point]['rowNumber'])
-            
-            item.put()
-            
-            point = point + 1
+            for index, item in enumerate (udata[key]['elements']):
+                
+                hasOption=True
+                
+                if udata[key]['elements'][index]['specialrequest']=="":
+                    udata[key]['elements'][index]['specialrequest']=None
+                    hasOption=False
+                
+                item = MenuItem(parent = restaurantKey,desc = udata[key]['elements'][index]['item'], price = float(udata[key]['elements'][index]['price']), hasOption = hasOption, option = udata[key]['elements'][index]['specialrequest'], rowNumber = udata[key]['elements'][index]['rowNumber'])
+                
+                item.put()
+              
+
             
             
         self.redirect('/admin.html')

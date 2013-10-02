@@ -172,19 +172,28 @@
   
       $('#step1').click(function(){ downloadData()});
       
+      // the key below is specic to the google spreadsheet with the food menu data
       function downloadData() {
-        Tabletop.init( { key: '0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc',
+      
+      TESTKEY = '0AhCan5cGNxiTdDdWRUhDT1pGcGdsNTJBRFZSUHNTcGc';
+      KEY = '0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc';
+      
+        Tabletop.init( { key: TESTKEY,
                          callback: function(data, tabletop) {        
                                       $('#step1').attr('class', "btn btn-lg btn-success");
                                       $('#step2').attr('class', "btn btn-lg btn-success");
                                       $('#step2').removeAttr('disabled');
+                                      
+                                      for (key in data){
+                                          delete data[key].raw;                                       
+                                      }
                                       
                                       console.log(data);
                                       
                                       $('#jsonData').attr('value', JSON.stringify(data));
                                       jsonData = data;
                                       },
-                         simpleSheet: true }
+                         simpleSheet: false }
                       );
       }
   });
