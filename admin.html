@@ -78,7 +78,7 @@
           <a id="orders"></a>
           
             <div class="text-center">
-              <button id="step1" type="button" class="btn btn-lg btn-success no-print " onclick=window.print()>Print Order</button>
+              <button type="button" class="btn btn-lg btn-success no-print " onclick=window.print()>Print Order</button>
             </div>
           
             <table class="table table-striped">
@@ -109,13 +109,13 @@
             </table>
 
             <div class="text-center">
-              <button id="step1" type="button" class="btn btn-lg btn-success no-print " onclick=window.print()>Print Order</button>
+              <button type="button" class="btn btn-lg btn-success no-print " onclick=window.print()>Print Order</button>
             </div>
           </div>
 {% endif %}
       </div><!-- end row-->
            
-    <div class="header no-print" style="padding-top:15em">
+    <div class="header no-print" style="padding-top:7em">
       <h1 class="text-muted">Menu Editing Instructions</small></h1>
     </div>
     <div class="row no-print">
@@ -129,8 +129,7 @@
       
       <ul>
           <li>Do NOT change the column headings.</li>
-          <li>Follow the existing spreadsheet format.</li>
-          <li>If the restaurant name isn't spelled exactly the same each time, it will be added as a new restaurant.</li>
+          <li>Follow the existing spreadsheet format. Each restaurant gets its own sheet, each sheet has column headers that should be copy/pasted exactly to avoid errors.</li>
           <li>The "specialrequest" column is for menu items where extra ordering information is required. The cell may be left blank.</li>
       </ul>
       
@@ -139,7 +138,7 @@
       
       <div class="header"></div>
           
-      <iframe width='700' height='300' frameborder='0' src='https://docs.google.com/spreadsheet/pub?key=0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc&single=true&gid=0&output=html&widget=true'></iframe>
+      <iframe width='700' height='500' frameborder='0' src='https://docs.google.com/spreadsheet/pub?key=0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc&output=html&widget=true'></iframe>
 
       <form action="/importdata.html" method="post">
         <button id="step1" type="button" class="btn btn-lg btn-success" >Step 1: Load Spreadsheet Data</button>
@@ -178,7 +177,7 @@
       TESTKEY = '0AhCan5cGNxiTdDdWRUhDT1pGcGdsNTJBRFZSUHNTcGc';
       KEY = '0AhCan5cGNxiTdEFOaUJ4TkdDYzRSWkRPMkNvdFR4RXc';
       
-        Tabletop.init( { key: TESTKEY,
+        Tabletop.init( { key: KEY,
                          callback: function(data, tabletop) {        
                                       $('#step1').attr('class', "btn btn-lg btn-success");
                                       $('#step2').attr('class', "btn btn-lg btn-success");

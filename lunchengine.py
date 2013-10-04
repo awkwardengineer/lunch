@@ -217,20 +217,31 @@ class ImportData(webapp2.RequestHandler):
         todaysOrder.put()
         
         orders = Order.query(ancestor = orderDateKey)
-        keys=[]
-        for order in orders:
-            keys.append(order.key)
-            ndb.delete_multi(keys)
+        if not (orders==None):
+            keys=[]
+            for order in orders:
+                keys.append(order.key)
+                ndb.delete_multi(keys)
     
     
         items = MenuItem.query()
-        keys=[]
-        for item in items:
-            keys.append(item.key)
-            ndb.delete_multi(keys)
+        if not (items==None):
+            keys=[]
+            for item in items:
+                keys.append(item.key)
+                ndb.delete_multi(keys)
+            
+        restaurants = Restaurant.query()
+        if not (items==None):
+            keys=[]
+            for restaurant in restaurants:
+                keys.append(restaurant.key)
+                ndb.delete_multi(keys)    
     
         data=self.request.POST['jsonData']
         udata = json.loads(urllib.unquote(data).decode('utf8'))
+        
+        newItems = []
 
         for key in udata:
             restaurantKey = ndb.Key(Restaurant, udata[key]['name'])
@@ -245,12 +256,15 @@ class ImportData(webapp2.RequestHandler):
                     udata[key]['elements'][index]['specialrequest']=None
                     hasOption=False
                 
-                item = MenuItem(parent = restaurantKey,desc = udata[key]['elements'][index]['item'], price = float(udata[key]['elements'][index]['price']), hasOption = hasOption, option = udata[key]['elements'][index]['specialrequest'], rowNumber = udata[key]['elements'][index]['rowNumber'])
+                newItem = MenuItem(parent = restaurantKey,
+                                   desc = udata[key]['elements'][index]['item'],
+                                   price = float(udata[key]['elements'][index]['price']),
+                                   hasOption = hasOption, option = udata[key]['elements'][index]['specialrequest'], rowNumber = udata[key]['elements'][index]['rowNumber'])
                 
-                item.put()
-              
+                newItems.append(newItem)
+          
+        ndb.put_multi(newItems)
 
-            
             
         self.redirect('/admin.html')
 
